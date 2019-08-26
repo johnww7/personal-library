@@ -12,6 +12,7 @@ var expect = require('chai').expect;
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 const MONGODB_CONNECTION_STRING = process.env.DB;
+var project = 'books';
 //Example connection: MongoClient.connect(MONGODB_CONNECTION_STRING, function(err, db) {});
 
 module.exports = function (app) {
@@ -22,9 +23,28 @@ module.exports = function (app) {
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
     
-    .post(function (req, res){
+    .post(function aysnc (req, res){
       var title = req.body.title;
       //response will contain new book object including atleast _id and title
+      try {
+        MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+          if(err) {
+            console.log("Database error: " + err);
+          }
+          console.log("Successfull database connection");
+
+          let postPromise = () => {
+            return new Promise((resolve, reject) => {
+
+            })
+          }
+        });
+        
+        var postResult = await postPromise();
+      }
+      catch(e) {
+
+      }
     })
     
     .delete(function(req, res){
