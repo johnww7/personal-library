@@ -23,7 +23,7 @@ module.exports = function (app) {
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
     
-    .post(function aysnc (req, res){
+    .post(async function(req, res){
       var title = req.body.title;
       //response will contain new book object including atleast _id and title
       try {
@@ -33,17 +33,36 @@ module.exports = function (app) {
           }
           console.log("Successfull database connection");
 
-          let postPromise = () => {
+          var postPromise = () => {
             return new Promise((resolve, reject) => {
-
+              db.collection(project).insertOne({title: title}, (err, res) => {
+                if(err) {
+                  reject(err);
+                }
+                else {
+                  console.log('1 book submitted');
+                  console.log(res);
+                  let bookId = res.ops[0]._id;
+                  resolve(bookId);
+                }
+              });
             })
           }
+
+          var postBookResult = await postPromise();
+
+          db.close();
+          let bookSubmittedToLibrary = {
+            _id: postBookResult,
+            title
+          };
+
+          res.json(bookSubmittedToLibrary);
         });
         
-        var postResult = await postPromise();
       }
       catch(e) {
-
+        console.log(e);
       }
     })
     
