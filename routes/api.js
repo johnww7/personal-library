@@ -23,7 +23,7 @@ module.exports = function (app) {
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
     
-    .post(async function(req, res, next){
+    .post(async (req, res, next) => {
       var title = req.body.title;
       //response will contain new book object including atleast _id and title
       try {
@@ -56,15 +56,15 @@ module.exports = function (app) {
             _id: postBookResult,
             title
           };
-
+          //res.json({_id: postBookResult});
           res.json(bookSubmittedToLibrary);
-          next();
+          //next();
         });
         
       }
       catch(e) {
         console.log(e);
-        next(e);
+        //next(e);
       }
     })
     
