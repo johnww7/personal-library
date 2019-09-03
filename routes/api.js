@@ -50,28 +50,36 @@ module.exports = function (app) {
             })
           };
 
-          //var postBookResult = await postPromise();
+          let postBookResult = async() => {
+            let result = await postPromise();
+            /*let bookPosted = {
+              _id: result,
+              title: title
+            };*/
+            return result;
+          };
           
-          postPromise().then(res => {
+          postBookResult().then(function(postResult) {
             db.close();
             /*let bookSubmittedToLibrary = {
               _id: res,
               title
             };*/
             //res.json({_id: postBookResult});
+            console.log('book: ' + JSON.stringify(postResult));
             res.json({
-              _id: res,
+              _id: postResult,
               title: title
             });
             //next();
-          });
+          }).catch(e => {console.log(e)});
           
         });
         
       }
       catch(e) {
         console.log(e);
-        //next(e);
+        next(e);
       }
     })
     
