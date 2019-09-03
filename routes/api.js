@@ -11,7 +11,8 @@
 var expect = require('chai').expect;
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
-const MONGODB_CONNECTION_STRING = process.env.DB;
+//const MONGODB_CONNECTION_STRING = process.env.DB;
+const MONGODB_CONNECTION_STRING = 'mongodb://john:N1teLockon@ds035787.mlab.com:35787/jwfccmongodb';
 var project = 'books';
 //Example connection: MongoClient.connect(MONGODB_CONNECTION_STRING, function(err, db) {});
 
@@ -23,7 +24,7 @@ module.exports = function (app) {
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
     
-    .post(async (req, res, next) => {
+    .post( (req, res) => {
       var title = req.body.title;
       //response will contain new book object including atleast _id and title
       try {
@@ -49,16 +50,22 @@ module.exports = function (app) {
             })
           };
 
-          var postBookResult = await postPromise();
-
-          db.close();
-          let bookSubmittedToLibrary = {
-            _id: postBookResult,
-            title
-          };
-          //res.json({_id: postBookResult});
-          res.json(bookSubmittedToLibrary);
-          //next();
+          //var postBookResult = await postPromise();
+          
+          postPromise().then(res => {
+            db.close();
+            /*let bookSubmittedToLibrary = {
+              _id: res,
+              title
+            };*/
+            //res.json({_id: postBookResult});
+            res.json({
+              _id: res,
+              title: title
+            });
+            //next();
+          });
+          
         });
         
       }
