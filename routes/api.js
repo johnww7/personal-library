@@ -22,6 +22,37 @@ module.exports = function (app) {
     .get(function (req, res){
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+      try {
+        MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+          if(err) {
+            console.log("Database error: " + err);
+          }
+          console.log("successful database connection");
+
+          var getPromise = () => {
+            return new Promise((resolve, reject) => {
+              db.collection(project).find({}).toArray((err, res) => {
+                if(err) {
+                  reject(err);
+                }
+                else {
+                  console.log('Returning books');
+                  console.log('Books in library: ' + res);
+                  resolve(res);
+                }
+              });
+            });
+          };
+
+          getPromise().then((getResult) => {
+            db.close();
+            res.json(getResult);
+          });
+        });
+      }
+      catch (e) {
+        console.log(e);
+      }
     })
     
     .post( (req, res) => {
