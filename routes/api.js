@@ -31,13 +31,13 @@ module.exports = function (app) {
 
           var getPromise = () => {
             return new Promise((resolve, reject) => {
-              db.collection(project).find({}).toArray((err, res) => {
+              db.collection(project).find({},{_id: 1, title: 1, commentCount: 1}).toArray((err, res) => {
                 if(err) {
                   reject(err);
                 }
                 else {
                   console.log('Returning books');
-                  console.log('Books in library: ' + res);
+                  console.log('Books in library: ' + JSON.stringify(res));
                   resolve(res);
                 }
               });
@@ -67,7 +67,7 @@ module.exports = function (app) {
 
           var postPromise = () => {
             return new Promise((resolve, reject) => {
-              db.collection(project).insertOne({title: title}, (err, res) => {
+              db.collection(project).insertOne({title: title, comments: [], commentCount: 0}, (err, res) => {
                 if(err) {
                   reject(err);
                 }
@@ -124,6 +124,37 @@ module.exports = function (app) {
     .get(function (req, res){
       var bookid = req.params.id;
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+      try {
+        MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+          if(err) {
+            console.log("Database error: " + err);
+          }
+          console.log("successful database connection");
+
+          var getPromise = () => {
+            return new Promise((resolve, reject) => {
+              db.collection(project).findOne({_id: bookid},{_id: 1, title: 1, comments: 1}, (err, res) => {
+                if(err) {
+                  reject(err);
+                }
+                else {
+                  console.log('Returning selected book');
+                  console.log('Book chosen: ' + JSON.stringify(res));
+                  resolve(res);
+                }
+              });
+            });
+          };
+
+          getPromise().then((getResult) => {
+            db.close();
+            res.json(getResult);
+          });
+        });
+      }
+      catch (e) {
+        console.log(e);
+      }
     })
     
     .post(function(req, res){
