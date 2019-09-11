@@ -175,17 +175,19 @@ module.exports = function(app) {
           }
           console.log("successful database connection");
 
-          var getPromise = () => {
+          var idPostPromise = () => {
             return new Promise((resolve, reject) => {
-              db.collection(project).findOne(
+              db.collection(project).findOneAndUpdate(
                 { _id: ObjectId(bookid) },
-                { _id: 1, title: 1, comments: 1 },
+                {$push: {comments: comment}},
+                { projection: {_id: 1, title: 1, comments: 1},
+                returnOriginal: true},
                 (err, res) => {
                   if (err) {
                     reject(err);
                   } else {
-                    console.log("Returning selected book");
-                    console.log("Book chosen: " + JSON.stringify(res));
+                    console.log("Posted comment to selected book");
+                    console.log("Book with comments: " + JSON.stringify(res));
                     resolve(res);
                   }
                 }
@@ -193,7 +195,7 @@ module.exports = function(app) {
             });
           };
 
-          getPromise().then(getResult => {
+          idPostPromise().then(getResult => {
             db.close();
             res.json(getResult);
           });
