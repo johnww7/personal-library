@@ -181,14 +181,14 @@ module.exports = function(app) {
                 { _id: ObjectId(bookid) },
                 {$push: {comments: comment}},
                 { projection: {_id: 1, title: 1, comments: 1},
-                returnOriginal: true},
+                returnOriginal: false},
                 (err, res) => {
                   if (err) {
                     reject(err);
                   } else {
                     console.log("Posted comment to selected book");
-                    console.log("Book with comments: " + JSON.stringify(res));
-                    resolve(res);
+                    console.log("Book with comments: " + JSON.stringify(res.value));
+                    resolve(res.value);
                   }
                 }
               );
