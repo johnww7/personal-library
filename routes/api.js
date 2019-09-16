@@ -209,5 +209,37 @@ module.exports = function(app) {
     .delete(function(req, res) {
       var bookid = req.params.id;
       //if successful response will be 'delete successful'
+      try {
+        MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+          if (err) {
+            console.log("Database error: " + err);
+          }
+          console.log("successful database connection");
+
+          var deletePromise = () => {
+            return new Promise((resolve, reject) => {
+              db.collection(project).deleteOne(
+                { _id: ObjectId(bookid) },
+                (err, res) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    console.log("Returning selected book");
+                    console.log("Book chosen: " + JSON.stringify(res));
+                    resolve({result: 'delete successful'});
+                  }
+                }
+              );
+            });
+          };
+
+          deletePromise().then(deleteResult => {
+            db.close();
+            res.json(deleteResult);
+          });
+        });
+      } catch (e) {
+        console.log(e);
+      }
     });
 };
