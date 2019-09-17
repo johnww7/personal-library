@@ -161,6 +161,7 @@ module.exports = function(app) {
       } catch (e) {
         console.log(e);
       }
+      
     })
 
     .post(function(req, res) {
@@ -218,7 +219,7 @@ module.exports = function(app) {
 
           var deletePromise = () => {
             return new Promise((resolve, reject) => {
-              db.collection(project).deleteOne(
+              db.collection(project).findOneAndDelete(
                 { _id: ObjectId(bookid) },
                 (err, res) => {
                   if (err) {
