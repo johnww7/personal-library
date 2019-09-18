@@ -144,9 +144,15 @@ module.exports = function(app) {
                   if (err) {
                     reject(err);
                   } else {
+                    //
                     console.log("Returning selected book");
                     console.log("Book chosen: " + JSON.stringify(res));
-                    resolve(res);
+                    if(res === null) {
+                      resolve('no book exists');
+                    }
+                    else {
+                      resolve(res);
+                    }
                   }
                 }
               );
@@ -155,7 +161,7 @@ module.exports = function(app) {
 
           getPromise().then(getResult => {
             db.close();
-            res.json(getResult);
+            res.send(getResult);
           });
         });
       } catch (e) {
@@ -226,8 +232,8 @@ module.exports = function(app) {
                     reject(err);
                   } else {
                     console.log("Returning selected book");
-                    console.log("Book chosen: " + JSON.stringify(res));
-                    resolve({result: 'delete successful'});
+                    console.log("Book deleted: " + JSON.stringify(res));
+                    resolve('delete successful');
                   }
                 }
               );
@@ -236,7 +242,7 @@ module.exports = function(app) {
 
           deletePromise().then(deleteResult => {
             db.close();
-            res.json(deleteResult);
+            res.send(deleteResult);
           });
         });
       } catch (e) {
