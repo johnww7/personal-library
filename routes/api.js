@@ -96,11 +96,6 @@ module.exports = function(app) {
           postBookResult()
             .then(function(postResult) {
               db.close();
-              /*let bookSubmittedToLibrary = {
-              _id: res,
-              title
-            };*/
-              //res.json({_id: postBookResult});
               console.log("book: " + JSON.stringify(postResult));
               res.json({
                 _id: postResult,
@@ -120,6 +115,39 @@ module.exports = function(app) {
 
     .delete(function(req, res) {
       //if successful response will be 'complete delete successful'
+      try {
+        MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+          if (err) {
+            console.log("Database error: " + err);
+          }
+          console.log("successful database connection");
+
+          let deleteAllPromise = () => {
+            return new Promise((resolve, reject) => {
+              db.collection(project).deleteMany(
+                { },
+                (err, res) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    console.log("All books deleted");
+                    console.log("Books deleted: " + JSON.stringify(res));
+                    resolve('complete delete successful');
+                  }
+                }
+              );
+            });
+          };
+
+          deleteAllPromise().then(deleteResult => {
+            db.close();
+            console.log('Result of delete: ' + deleteResult);
+            res.json({result: deleteResult});
+          });
+        });
+      } catch (e) {
+        console.log(e);
+      }
     });
 
   app
