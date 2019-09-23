@@ -139,10 +139,10 @@ module.exports = function(app) {
             });
           };
 
-          deleteAllPromise().then(deleteResult => {
+          deleteAllPromise().then(deleteAllResult => {
             db.close();
-            console.log('Result of delete: ' + deleteResult);
-            res.json({result: deleteResult});
+            console.log('Result of delete: ' + typeof(deleteAllResult));
+            res.send(deleteAllResult);
           });
         });
       } catch (e) {
