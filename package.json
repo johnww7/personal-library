@@ -4,7 +4,8 @@
 	"description": "boilerplate",
 	"main": "server.js",
 	"scripts": {
-		"start": "node server.js"
+		"start": "node server.js",
+		"test": "mocha -u tdd"
 	},
 	"dependencies": {
 		"express": "^4.14.0",

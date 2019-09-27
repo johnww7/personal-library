@@ -32,8 +32,10 @@ var Mocha = require('mocha'),
     fs = require('fs'),
     path = require('path');
 
-var mocha = new Mocha();
-var testDir = './tests'
+var mocha = new Mocha({
+  ui: 'tdd'
+});
+var testDir = './test'
 
 
 // Add each .js file to the mocha instance
