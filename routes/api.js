@@ -165,29 +165,46 @@ module.exports = function(app) {
 
           var getPromise = () => {
             return new Promise((resolve, reject) => {
-              db.collection(project).findOne(
-                { _id: ObjectId(bookid) },
-                { _id: 1, title: 1, comments: 1 },
-                (err, res) => {
-                  if (err) {
-                    reject(err);
-                  } else {
-                    //
-                    console.log("Returning selected book");
-                    console.log("Book chosen: " + JSON.stringify(res));
-                    if(res === null) {
-                      resolve('no book exists');
-                    }
-                    else {
-                      resolve(res);
+              if(!ObjectId.isValide(bookid)) 
+              {
+                resolve('no book exists');
+              }
+              
+              else{
+                db.collection(project).findOne(
+                  { _id: ObjectId(bookid) },
+                  { _id: 1, title: 1, comments: 1 },
+                  (err, res) => {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      //
+                      console.log("Returning selected book");
+                      console.log("Book chosen: " + JSON.stringify(res));
+                      if(Object.keys(res).length == 0) {
+                        resolve('no book exists');
+                      }
+                      else {
+                        resolve(res);
+                      }
                     }
                   }
-                }
-              );
+                );
+              } 
+                
             });
           };
 
-          getPromise().then(getResult => {
+          let getBookIdResult = async () => {
+            let result = await getPromise();
+            /*let bookPosted = {
+              _id: result,
+              title: title
+            };*/
+            return result;
+          };
+
+          getBookIdResult().then(getResult => {
             db.close();
             res.send(getResult);
           });
