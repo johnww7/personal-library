@@ -39,7 +39,6 @@ module.exports = function(app) {
                     reject(err);
                   } else {
                     console.log("Returning books");
-                    console.log("Books in library: " + JSON.stringify(res));
                     resolve(res);
                   }
                 });
@@ -75,7 +74,6 @@ module.exports = function(app) {
                     reject(err);
                   } else {
                     console.log("1 book submitted");
-                    console.log(res);
                     let bookId = res.ops[0]._id;
                     resolve(bookId);
                   }
@@ -86,22 +84,16 @@ module.exports = function(app) {
 
           let postBookResult = async () => {
             let result = await postPromise();
-            /*let bookPosted = {
-              _id: result,
-              title: title
-            };*/
             return result;
           };
 
           postBookResult()
             .then(function(postResult) {
               db.close();
-              console.log("book: " + JSON.stringify(postResult));
               res.json({
                 _id: postResult,
                 title: title
               });
-              //next();
             })
             .catch(e => {
               console.log(e);
@@ -131,7 +123,6 @@ module.exports = function(app) {
                     reject(err);
                   } else {
                     console.log("All books deleted");
-                    console.log("Books deleted: " + JSON.stringify(res));
                     resolve('complete delete successful');
                   }
                 }
@@ -141,7 +132,6 @@ module.exports = function(app) {
 
           deleteAllPromise().then(deleteAllResult => {
             db.close();
-            console.log('Result of delete: ' + typeof(deleteAllResult));
             res.send(deleteAllResult);
           });
         });
@@ -154,7 +144,6 @@ module.exports = function(app) {
     .route("/api/books/:id")
     .get(function(req, res) {
       var bookid = req.params.id;
-      console.log("book id: " + bookid);
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
       try {
         MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
@@ -165,9 +154,9 @@ module.exports = function(app) {
 
           var getPromise = () => {
             return new Promise((resolve, reject) => {
-              if(!ObjectId.isValide(bookid)) 
+              if(!ObjectId.isValid(bookid)) 
               {
-                resolve('no book exists');
+                resolve({result: 'no book exists'});
               }
               
               else{
@@ -180,9 +169,8 @@ module.exports = function(app) {
                     } else {
                       //
                       console.log("Returning selected book");
-                      console.log("Book chosen: " + JSON.stringify(res));
-                      if(Object.keys(res).length == 0) {
-                        resolve('no book exists');
+                      if(Object.keys(res).length == 0 || res == null) {
+                        resolve({result: 'no book exists'});
                       }
                       else {
                         resolve(res);
@@ -197,10 +185,6 @@ module.exports = function(app) {
 
           let getBookIdResult = async () => {
             let result = await getPromise();
-            /*let bookPosted = {
-              _id: result,
-              title: title
-            };*/
             return result;
           };
 
@@ -218,7 +202,6 @@ module.exports = function(app) {
     .post(function(req, res) {
       var bookid = req.params.id;
       var comment = req.body.comment;
-      console.log('book id: ' + bookid + ', comments: ' + comment);
       //json res format same as .get
       try {
         MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
@@ -239,7 +222,6 @@ module.exports = function(app) {
                     reject(err);
                   } else {
                     console.log("Posted comment to selected book");
-                    console.log("Book with comments: " + JSON.stringify(res.value));
                     resolve(res.value);
                   }
                 }
@@ -277,7 +259,6 @@ module.exports = function(app) {
                     reject(err);
                   } else {
                     console.log("Returning selected book");
-                    console.log("Book deleted: " + JSON.stringify(res));
                     resolve('delete successful');
                   }
                 }
